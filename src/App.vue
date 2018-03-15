@@ -171,15 +171,9 @@ export default {
         if (/component/.test(this.$route.path) && parts[2]) return parts[2]
       }
     },
-    isDemo () {
-      return /component|demo/.test(this.$route.path)
-    },
-    isTabbarDemo () {
-      return /tabbar/.test(this.$route.path)
-    },
     title () {
       if (this.$route.path === '/') return '全部'
-      if (this.$route.path === '/project/donate') return 'Donate'
+      if (this.$route.path === '/?tab=good') return '精华'
       if (this.$route.path === '/demo') return 'Demo list'
       return this.componentName ? `Demo/${this.componentName}` : 'Demo/~~'
     },

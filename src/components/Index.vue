@@ -1,94 +1,89 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li>
-        <a
-          href="https://vuejs.org"
-          target="_blank"
+    <v-Loading v-if="isLoading" style="margin:50px auto;" type="spiningDubbles" color="#009688" :size="{ width: '50px', height: '50px' }"></v-Loading>
+    <scroller
+        v-else
+        lock-x
+        height="-40"
+        :bounce='false'
+        use-pullup scrollbarY
+        ref="scroller"
+        :scroll-bottom-offst="200"
+        @on-pullup-loading="onLoadingMore"
+        v-model="status"
+        :pullup-config="pullupConfig"
         >
-          Core Docs
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://forum.vuejs.org"
-          target="_blank"
-        >
-          Forum
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://chat.vuejs.org"
-          target="_blank"
-        >
-          Community Chat
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://twitter.com/vuejs"
-          target="_blank"
-        >
-          Twitter
-        </a>
-      </li>
-      <br>
-      <li>
-        <a
-          href="http://vuejs-templates.github.io/webpack/"
-          target="_blank"
-        >
-          Docs for This Template
-        </a>
-      </li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li>
-        <a
-          href="http://router.vuejs.org/"
-          target="_blank"
-        >
-          vue-router
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vuex.vuejs.org/"
-          target="_blank"
-        >
-          vuex
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vue-loader.vuejs.org/"
-          target="_blank"
-        >
-          vue-loader
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-        >
-          awesome-vue
-        </a>
-      </li>
-    </ul>
+        <List :list-data="list" :load-done="dataLoadDone"></List>
+      </scroller>
+
   </div>
 </template>
 
 <script>
+import VLoading from 'vue-loading-template'
+import { Scroller , LoadMore } from 'vux'
+import BScroll from 'better-scroll'
+import { GetTopics } from '../api'
+import List from './List'
 export default {
   name: 'HelloWorld',
+  components: {
+    List,
+    VLoading,
+    Scroller,
+
+  },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      isLoading:true,
+      list:[],
+      params:{
+        tab:'good',
+        page:1,
+        limit:10
+      },
+      status: {
+        pullupStatus: 'default'
+      },
+      pullupConfig:{
+        content: '上拉加载更多',
+        pullUpHeight: 60,
+        height: 60,
+        autoRefresh: false,
+        downContent: '松开加载更多',
+        upContent: '上拉加载更多',
+        loadingContent: '加载中...',
+        clsPrefix: 'loading-more-'
+      },
+      dataLoadDone:false
+    }
+  },
+  created() {
+    //do something after creating vue instance
+    this.getList()
+  },
+  methods: {
+    //获取数据
+    getList() {
+      GetTopics(this.params).then((res)=>{
+        this.isLoading = false
+        this.list = this.list.concat(res.data)
+        this.status.pullupStatus = 'default'
+        if(this.params.page>1 && !res.data.length){
+          this.$refs.scroller.disablePullup()
+          this.dataLoadDone = true
+        }
+      })
+    },
+    onLoadingMore() {
+      this.params.page++
+      // setTimeout(()=>{
+      this.getList()
+
+      // },3000)
+    },
+    loadingMoreDone() {
+      this.$refs.scroller.donePullup()
     }
   }
 }

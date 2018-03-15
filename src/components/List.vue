@@ -1,156 +1,119 @@
 <template>
-  <div id="list" class="wrapper">
-    <scroller
-        lock-x
-        height="-40"
-        use-pullup scrollbarY
-        ref="scrollerBottom"
-        :scroll-bottom-offst="200"
-        @on-pullup-loading="onLoadingMore"
-        v-model="status"
-        :pullup-config="pullupConfig"
-        >
-      <div class="scroll_wrapper">
+  <div id="list" class="scroll_wrapper">
         <ul class="list_content">
-          <li>11111111111111111111</li>
-          <li>2222222222222222222222</li>
-          <li>33333333333333333333333</li>
-          <li>4444444444444444444444</li>
-          <li>5555555555555555555555</li>
-          <li>6666666666666666666666</li>
-          <li>7777777777777777777777</li>
-          <li>88888888888888888888888</li>
-          <li>99999999999999999999999</li>
-          <li>11111111111111111111</li>
-          <li>2222222222222222222222</li>
-          <li>33333333333333333333333</li>
-          <li>4444444444444444444444</li>
-          <li>5555555555555555555555</li>
-          <li>6666666666666666666666</li>
-          <li>7777777777777777777777</li>
-          <li>88888888888888888888888</li>
-          <li>99999999999999999999999</li>
-          <li>11111111111111111111</li>
-          <li>2222222222222222222222</li>
-          <li>33333333333333333333333</li>
-          <li>4444444444444444444444</li>
-          <li>5555555555555555555555</li>
-          <li>6666666666666666666666</li>
-          <li>7777777777777777777777</li>
-          <li>88888888888888888888888</li>
-          <li>99999999999999999999999</li>
-          <li>11111111111111111111</li>
-          <li>2222222222222222222222</li>
-          <li>33333333333333333333333</li>
-          <li>4444444444444444444444</li>
-          <li>5555555555555555555555</li>
-          <li>6666666666666666666666</li>
-          <li>7777777777777777777777</li>
-          <li>88888888888888888888888</li>
-          <li>99999999999999999999999</li>
-          <li>11111111111111111111</li>
-          <li>2222222222222222222222</li>
-          <li>33333333333333333333333</li>
-          <li>4444444444444444444444</li>
-          <li>5555555555555555555555</li>
-          <li>6666666666666666666666</li>
-          <li>7777777777777777777777</li>
-          <li>88888888888888888888888</li>
-          <li>99999999999999999999999</li>
-          <li>11111111111111111111</li>
-          <li>2222222222222222222222</li>
-          <li>33333333333333333333333</li>
-          <li>4444444444444444444444</li>
-          <li>5555555555555555555555</li>
-          <li>6666666666666666666666</li>
-          <li>7777777777777777777777</li>
-          <li>88888888888888888888888</li>
-          <li>99999999999999999999999</li>
-          <li>11111111111111111111</li>
-          <li>2222222222222222222222</li>
-          <li>33333333333333333333333</li>
-          <li>4444444444444444444444</li>
-          <li>5555555555555555555555</li>
-          <li>6666666666666666666666</li>
-          <li>7777777777777777777777</li>
-          <li>88888888888888888888888</li>
-          <li>99999999999999999999999</li>
-          <li>11111111111111111111</li>
-          <li>2222222222222222222222</li>
-          <li>33333333333333333333333</li>
-          <li>4444444444444444444444</li>
-          <li>5555555555555555555555</li>
-          <li>6666666666666666666666</li>
-          <li>7777777777777777777777</li>
-          <li>88888888888888888888888</li>
-          <li>99999999999999999999999</li>
+          <li v-for="item in ListData" :key="item.id">
+            <div class="img">
+              <img :src="item.author.avatar_url" alt="">
+            </div>
+            <div class="info">
+              <p class="top">
+                <span class="tag">{{(item.top && item.good)?'置顶':'精华'}}</span>
+                <span class="title">{{item.title}}</span>
+              </p>
+              <p class="bottom">
+                <span>{{item.reply_count}} / {{item.visit_count}}</span>
+                <span>{{item.last_reply_at}}</span>
+              </p>
+            </div>
+          </li>
         </ul>
-        <!-- <load-more v-if="loading" tip="加载更多"></load-more> -->
-      </div>
-    </scroller>
+        <div v-if="LoadDone" class="dataLoadDone">
+          没有更多数据了
+        </div>
   </div>
 </template>
 <script>
-// import '../../node_modules/mescroll.js/mescroll.min.css'
-// import '../../node_modules/mescroll.js/mescroll.min.js'
-import BScroll from 'better-scroll'
-import { Scroller , LoadMore} from 'vux'
 export default {
+  props: {
+    ListData:{
+      type:Array,
+      default:[]
+    },
+    LoadDone:{
+      type:Boolean,
+      default:false
+    }
+  },
   components: {
-    Scroller,
-    LoadMore
+
   },
   data () {
     return {
-      scroll:null,
-      loading:false,
-      status: {
-        pullupStatus: 'default'
-      },
-      pullupConfig:{
-        content: '上拉加载更多',
-        pullUpHeight: 60,
-        height: 40,
-        autoRefresh: false,
-        downContent: '松开加载更多',
-        upContent: '上拉加载更多',
-        loadingContent: '加载中...',
-        clsPrefix: 'xs-plugin-pullup-'
-      }
     }
   },
   mounted() {
   },
   methods: {
-    // onScrollBottom() {
-    //   console.log('1111')
-    //   this.loading = true
-    //   setTimeout(()=>{
-    //     this.loading = false
-    //   },3000)
-    // },
-    onLoadingMore() {
-      console.log('222222')
-      setTimeout(()=>{
-        this.status.pullupStatus = 'default'
-      },3000)
-    },
-    loadingMoreDone() {
-      this.$refs.scroller.donePullup()
-    }
   }
 }
 </script>
 <style lang="less" scoped>
+.dataLoadDone{
+  height: 40px;
+  line-height: 40px;
+  text-align:center;
+  font-size: 14px;
+  color: #999;
+  padding-bottom: 20px;
+}
 .list_content{
   width:100%;
   overflow:hidden;
   list-style:none;
+  padding-bottom: 10px;
   li{
     width:100%;
-    height:50px;
-    line-height:50px;
-    text-align:center;
+    height: 86px;
+    padding:10px;
+    display: flex;
+    display: -webkit-flex;
+    border-bottom: 1px solid #eee;
+    box-sizing: border-box;
+    .img{
+      width: 50px;
+      height: 50px;
+      margin:5px 10px 5px 0;
+      img{
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .info{
+      flex: 1;
+      .top{
+        width: 100%;
+        height: 42px;
+        float: left;
+        overflow: hidden;
+        line-height: 20px;
+        .tag{
+          background-color: #009688;
+          font-size: 13px;
+          color: #fff;
+          padding:2px 6px;
+          border-radius: 4px;
+        }
+        .title{
+          font-size: 13px;
+          font-weight: 600;
+        }
+      }
+      .bottom{
+        height: 20px;
+        margin-top: 2px;
+        font-size: 12px;
+        span{
+          color: #999;
+          float: left;
+          &:last-child{
+            float: right;
+          }
+        }
+      }
+    }
   }
+}
+.loading-more-container.loading-more-up{
+  padding-top: 15px!important;
 }
 </style>
