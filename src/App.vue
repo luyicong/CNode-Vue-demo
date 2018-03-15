@@ -9,29 +9,34 @@
 
       <!-- drawer content -->
       <div slot="drawer">
+        <div class="logo">
+          <img :src="require('./assets/img/logo.png')" alt="">
+          <span>Vue.js</span>
+        </div>
         <group>
-          <cell title="全部" link="/List" value="" @click.native="drawerVisibility = false">
+          <cell
+            v-for="item in navList"
+            :title="item.title"
+            :link="`/?tab=${item.type}`"
+            :key="item.type"
+            :class="$route.query.tab === item.type?'active':''"
+            @click.native="drawerVisibility = false"
+          >
           </cell>
-          <cell title="问答" link="/List" value="" @click.native="drawerVisibility = false">
-          </cell>
-          <cell title="分享" link="/List" value="" @click.native="drawerVisibility = false">
-          </cell>
-          <cell title="招聘" link="/List" value="" @click.native="drawerVisibility = false">
-          </cell>
-          <cell title="精华" link="/List" value="" @click.native="drawerVisibility = false">
-          </cell>
-          <cell title="关于" link="/List" value="" @click.native="drawerVisibility = false">
+          <cell
+            title="关于"
+            link="/about"
+            @click.native="drawerVisibility = false"
+          >
           </cell>
         </group>
       </div>
-
       <!-- main content -->
       <view-box ref="viewBox" body-padding-top="46px" body-padding-bottom="0">
-
         <x-header slot="header"
           style="width:100%;position:absolute;left:0;top:0;z-index:100;"
           :left-options="leftOptions"
-          :title="title"
+          :title="title()"
           :transition="headerTransition"
         >
           <span v-if="$route.path === '/'" slot="overwrite-left" @click="drawerVisibility = !drawerVisibility">
@@ -45,7 +50,6 @@
         :name="viewTransition" :css="!!direction">
           <router-view class="router-view"></router-view>
         </transition>
-
       </view-box>
     </drawer>
   </div>
@@ -65,28 +69,6 @@ export default {
     ViewBox,
     XHeader
   },
-  data() {
-    return {
-      List:[
-        {
-          type:'all',
-          title:'全部'
-        },
-        {
-          type:'ask',
-          title:'问答'
-        },
-        {
-          type:'share',
-          title:'分享'
-        },
-        {
-          type:'job',
-          title:'招聘'
-        }
-      ]
-    }
-  },
   methods: {
     onShowModeChange (val) {
       /** hide drawer before changing showMode **/
@@ -102,55 +84,45 @@ export default {
         this.showPlacementValue = val
       }, 400)
     },
-    changeLocale (locale) {
-      this.$i18n.set(locale)
-      this.$locale.set(locale)
-    },
     ...mapActions([
       'updateDemoPosition'
-    ])
+    ]),
+    title() {
+      switch (this.$route.query.tab) {
+        case 'all':
+          return '全部'
+          break;
+        case 'good':
+          return '精华'
+          break;
+        case 'ask':
+          return '问答'
+          break;
+        case 'share':
+          return '分享'
+          break;
+        case 'job':
+          return '招聘'
+          break;
+        case 'weex':
+          return 'Weex'
+          break;
+      }
+      if(this.$route.path === '/about'){
+        return '关于'
+      }
+    }
   },
   mounted () {
-    this.handler = () => {
-      if (this.path === '/demo') {
-        this.box = document.querySelector('#demo_list_box')
-        this.updateDemoPosition(this.box.scrollTop)
-      }
-    }
-  },
-  beforeDestroy () {
-    this.box && this.box.removeEventListener('scroll', this.handler, false)
   },
   watch: {
-    path (path) {
-      if (path === '/component/demo') {
-        this.$router.replace('/demo')
-        return
-      }
-      if (path === '/demo') {
-        setTimeout(() => {
-          this.box = document.querySelector('#demo_list_box')
-          if (this.box) {
-            this.box.removeEventListener('scroll', this.handler, false)
-            this.box.addEventListener('scroll', this.handler, false)
-          }
-        }, 1000)
-      } else {
-        this.box && this.box.removeEventListener('scroll', this.handler, false)
-      }
-    }
+    '$route':'title'
   },
   computed: {
     ...mapState({
       isLoading: state => state.common.isLoading,
       direction: state => state.common.direction
     }),
-    isShowBar () {
-      if (/component/.test(this.path)) {
-        return true
-      }
-      return false
-    },
     leftOptions () {
       return {
         showBack: this.$route.path !== '/'
@@ -171,12 +143,6 @@ export default {
         if (/component/.test(this.$route.path) && parts[2]) return parts[2]
       }
     },
-    title () {
-      if (this.$route.path === '/') return '全部'
-      if (this.$route.path === '/?tab=good') return '精华'
-      if (this.$route.path === '/demo') return 'Demo list'
-      return this.componentName ? `Demo/${this.componentName}` : 'Demo/~~'
-    },
     //页面切换动画
     viewTransition () {
       if (!this.direction) return ''
@@ -195,7 +161,34 @@ export default {
       showMode: 'push',
       showModeValue: 'push',
       showPlacement: 'left',
-      showPlacementValue: 'left'
+      showPlacementValue: 'left',
+      navList:[
+        {
+          type:'all',
+          title:'全部'
+        },
+        {
+          type:'good',
+          title:'精华'
+        },
+        {
+          type:'ask',
+          title:'问答'
+        },
+        {
+          type:'share',
+          title:'分享'
+        },
+        {
+          type:'job',
+          title:'招聘'
+        },
+        {
+          type:'weex',
+          title:'Weex'
+        }
+      ]
+
     }
   }
 }
@@ -213,15 +206,32 @@ html, body {
   width: 100%;
   overflow-x: hidden;
 }
+.weui-cell.vux-tap-active.weui-cell_access.active{
+  background-color: #ddd;
+}
+.drawer-nav{
+  width: 100%;
+  overflow: hidden;
+  background-color: #f5f5f5;
+  margin-top: 20px;
+  li{
+    width: 100%;
+    height: 40px;
+    border-bottom: 1px solid #999;
+    line-height: 40px;
+    span{
+      margin-left: 15px;
+    }
+  }
+  .nav-icon{
+    float: right;
+    margin:7px 6px 7px 0;
+  }
+}
 .demo-icon-22 {
   font-family: 'vux-demo';
   font-size: 22px;
   color: #888;
-}
-.weui-tabbar.vux-demo-tabbar {
-  /** backdrop-filter: blur(10px);
-  background-color: none;
-  background: rgba(247, 247, 250, 0.5);**/
 }
 .vux-demo-tabbar .weui-bar__item_on .demo-icon-22 {
   color: #F70968;
@@ -302,5 +312,20 @@ html, body {
 }
 .menu-title {
   color: #888;
+}
+.logo{
+  width: 200px;
+  height: 80px;
+  line-height: 100px;
+  text-align: center;
+  img{
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  span{
+    color:#fff;
+  }
 }
 </style>

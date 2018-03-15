@@ -1,12 +1,14 @@
 <template>
   <div class="hello">
-    <v-Loading v-if="isLoading" style="margin:50px auto;" type="spiningDubbles" color="#009688" :size="{ width: '50px', height: '50px' }"></v-Loading>
+    <v-Loading v-if="isLoading" style="margin:50px auto;" type="spiningDubbles" color="#009688" :size="{ width: '50px', height: '50px' }">
+      <span>玩命加载中</span>
+    </v-Loading>
     <scroller
         v-else
         lock-x
         height="-40"
         :bounce='false'
-        use-pullup scrollbarY
+        :use-pullup='(list.length>(params.limit-1))?true:false'
         ref="scroller"
         :scroll-bottom-offst="200"
         @on-pullup-loading="onLoadingMore"
@@ -38,7 +40,7 @@ export default {
       isLoading:true,
       list:[],
       params:{
-        tab:'good',
+        tab:'all',
         page:1,
         limit:10
       },
@@ -49,7 +51,7 @@ export default {
         content: '上拉加载更多',
         pullUpHeight: 60,
         height: 60,
-        autoRefresh: false,
+        autoRefresh: true,
         downContent: '松开加载更多',
         upContent: '上拉加载更多',
         loadingContent: '加载中...',
@@ -59,6 +61,7 @@ export default {
     }
   },
   created() {
+    this.params.tab = this.$route.query.tab
     //do something after creating vue instance
     this.getList()
   },
@@ -67,23 +70,29 @@ export default {
     getList() {
       GetTopics(this.params).then((res)=>{
         this.isLoading = false
-        this.list = this.list.concat(res.data)
+        this.list = this.list.length?this.list.concat(res.data):res.data
         this.status.pullupStatus = 'default'
         if(this.params.page>1 && !res.data.length){
-          this.$refs.scroller.disablePullup()
+          if(this.list.length>(this.params.limit-1)){
+            this.$refs.scroller.disablePullup()
+          }
+
           this.dataLoadDone = true
         }
       })
     },
     onLoadingMore() {
       this.params.page++
-      // setTimeout(()=>{
       this.getList()
-
-      // },3000)
-    },
-    loadingMoreDone() {
-      this.$refs.scroller.donePullup()
+    }
+  },
+  watch:{
+    $route() {
+      this.params.page = 1
+      this.params.tab = this.$route.query.tab
+      this.list = []
+      this.isLoading = true
+      this.getList()
     }
   }
 }
