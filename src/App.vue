@@ -17,7 +17,7 @@
           <cell
             v-for="item in navList"
             :title="item.title"
-            :link="`/?tab=${item.type}`"
+            :link="`/${item.type}`"
             :key="item.type"
             :class="$route.query.tab === item.type?'active':''"
             @click.native="drawerVisibility = false"
@@ -39,11 +39,10 @@
           :title="title()"
           :transition="headerTransition"
         >
-          <span v-if="$route.path === '/'" slot="overwrite-left" @click="drawerVisibility = !drawerVisibility">
-            <x-icon type="navicon" size="35" style="fill:#fff;position:relative;top:-8px;left:-3px;"></x-icon>
-          </span>
+        <span v-if="shoWrawer" slot="overwrite-left" @click="drawerVisibility = !drawerVisibility">
+          <x-icon type="navicon" size="35" style="fill:#fff;position:relative;top:-8px;left:-3px;"></x-icon>
+        </span>
         </x-header>
-
         <!-- remember to import BusPlugin in main.js if you use components: x-img and sticky -->
         <transition
         @after-enter="$vux.bus && $vux.bus.$emit('vux:after-view-enter')"
@@ -88,7 +87,8 @@ export default {
       'updateDemoPosition'
     ]),
     title() {
-      switch (this.$route.query.tab) {
+      console.log(this.$route.path)
+      switch (this.$route.name) {
         case 'all':
           return '全部'
           break;
@@ -114,6 +114,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.$route.params)
   },
   watch: {
     '$route':'title'
@@ -125,8 +126,11 @@ export default {
     }),
     leftOptions () {
       return {
-        showBack: this.$route.path !== '/'
+        showBack: (this.$route.path).includes('/detail') || this.$route.path === '/about'
       }
+    },
+    shoWrawer () {
+      return !this.leftOptions.showBack
     },
     rightOptions () {
       return {
@@ -137,26 +141,19 @@ export default {
       if (!this.direction) return ''
       return this.direction === 'forward' ? 'vux-header-fade-in-right' : 'vux-header-fade-in-left'
     },
-    componentName () {
-      if (this.$route.path) {
-        const parts = this.$route.path.split('/')
-        if (/component/.test(this.$route.path) && parts[2]) return parts[2]
-      }
-    },
     //页面切换动画
     viewTransition () {
       if (!this.direction) return ''
-      return 'vux-pop-' + (this.direction === 'forward' ? 'in' : 'out')
+      console.log(this.$route.path )
+      if((this.$route.path).includes('/detail') || this.$route.path === '/about'){
+        return 'vux-pop-' + (this.direction === 'forward' ? 'in' : 'out')
+      }
+
     }
   },
   data () {
     return {
       showMenu: false,
-      menus: {
-        'language.noop': '<span class="menu-title">Language</span>',
-        'zh-CN': '中文',
-        'en': 'English'
-      },
       drawerVisibility: false,
       showMode: 'push',
       showModeValue: 'push',
@@ -164,7 +161,7 @@ export default {
       showPlacementValue: 'left',
       navList:[
         {
-          type:'all',
+          type:'',
           title:'全部'
         },
         {
@@ -185,10 +182,9 @@ export default {
         },
         {
           type:'weex',
-          title:'Weex'
+          title:'weex'
         }
       ]
-
     }
   }
 }
@@ -205,6 +201,16 @@ html, body {
   height: 100%;
   width: 100%;
   overflow-x: hidden;
+}
+ul,ol{
+  margin:0;
+}
+p{
+  margin:0;
+}
+.vux-label{
+  margin-bottom: 0;
+  font-size: 16px;
 }
 .weui-cell.vux-tap-active.weui-cell_access.active{
   background-color: #ddd;

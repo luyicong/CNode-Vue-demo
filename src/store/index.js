@@ -4,6 +4,8 @@ import Vuex from 'vuex'
 
 import { cookie , WechatPlugin} from 'vux'
 
+import { GetTopics } from '../api'
+
 Vue.use(Vuex)
 
 const store = new Vuex.Store({}) // 这里你可能已经有其他 module

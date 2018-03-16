@@ -1,20 +1,15 @@
 <template>
-  <div class="index">
+  <div class="weex">
     <List></List>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import VLoading from 'vue-loading-template'
-import { LoadMore } from 'vux'
-import { GetTopics } from '../api'
 import List from './List'
 export default {
-  name: 'Index',
+  name: 'weex',
   components: {
-    List,
-    VLoading,
+    List
   },
   data () {
     return {
