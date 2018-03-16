@@ -30,9 +30,11 @@ export default {
 <style lang="less" scoped>
 .detail{
   padding:10px;
+  width: 100%;
+  background-color: #fff;
+  box-sizing: border-box;
 }
 .detail_title{
-  height: 100px;
   overflow: hidden;
   h3{
     font-size: 20px;

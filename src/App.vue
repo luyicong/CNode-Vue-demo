@@ -5,7 +5,7 @@
     :show.sync="drawerVisibility"
     :show-mode="showModeValue"
     :placement="showPlacementValue"
-    :drawer-style="{'background-color':'#35495e', width: '200px'}">
+    :drawer-style="{'background-color':'#009688', width: '200px'}">
 
       <!-- drawer content -->
       <div slot="drawer">
@@ -19,7 +19,7 @@
             :title="item.title"
             :link="`/${item.type}`"
             :key="item.type"
-            :class="$route.query.tab === item.type?'active':''"
+            :class="$route.name === item.type?'active':''"
             @click.native="drawerVisibility = false"
           >
           </cell>
@@ -215,25 +215,6 @@ p{
 .weui-cell.vux-tap-active.weui-cell_access.active{
   background-color: #ddd;
 }
-.drawer-nav{
-  width: 100%;
-  overflow: hidden;
-  background-color: #f5f5f5;
-  margin-top: 20px;
-  li{
-    width: 100%;
-    height: 40px;
-    border-bottom: 1px solid #999;
-    line-height: 40px;
-    span{
-      margin-left: 15px;
-    }
-  }
-  .nav-icon{
-    float: right;
-    margin:7px 6px 7px 0;
-  }
-}
 .demo-icon-22 {
   font-family: 'vux-demo';
   font-size: 22px;
@@ -332,6 +313,7 @@ p{
   }
   span{
     color:#fff;
+    font-size: 18px;
   }
 }
 </style>
