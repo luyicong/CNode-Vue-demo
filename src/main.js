@@ -68,6 +68,8 @@ router.beforeEach(function (to, from, next) {
   }
 })
 
+
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
