@@ -107,6 +107,9 @@ export default {
         case 'weex':
           return 'Weex'
           break;
+        case 'detail':
+          return '文章详情'
+          break;
       }
       if(this.$route.path === '/about'){
         return '关于'
@@ -145,9 +148,9 @@ export default {
     viewTransition () {
       if (!this.direction) return ''
       console.log(this.$route.path )
-      if((this.$route.path).includes('/detail') || this.$route.path === '/about'){
-        return 'vux-pop-' + (this.direction === 'forward' ? 'in' : 'out')
-      }
+      // if((this.$route.path).includes('/detail') || this.$route.path === '/about'){
+        // return 'vux-pop-' + (this.direction === 'forward' ? 'in' : 'out')
+      // }
 
     }
   },

@@ -55,6 +55,7 @@ export default new Router({
     },
     {
       path: '/detail/:id',
+      name:'detail',
       component: (resolve)=>{
         require([`@/components/Detail`], resolve)
       }

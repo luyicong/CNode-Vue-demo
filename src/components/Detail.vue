@@ -1,40 +1,50 @@
 <template>
   <div class="detail">
-    <div class="detail_title">
-      <h3>{{info.title}}</h3>
-    </div>
-    <div class="detail-content" v-html="info.content"></div>
-    <div class="panel">
-      <div class="header">
-        <span class="col_fade">{{info.replies.length}} 回复</span>
-      </div>
-      <div class="cell reply_area reply_item" id="reply1" :reply_id="item.id" reply_to_id="" v-for="(item,index) in info.replies">
-
-        <div class="author_content">
-          <a href="" class="user_avatar">
-            <img :src="item.author.avatar_url" title="LynanBreeze"></a>
-            <div class="user_info">
-              <a class="dark reply_author" href="">{{item.author.loginname}}</a>
-              <a class="reply_time" href="#5aab7bf89b1b06e7639cac42">{{index+1}}楼•{{item.create_at | timeFormat}}</a>
-            </div>
-          <div class="user_action">
-            <span>
-              <span class="up-count">喜欢({{item.ups.length}})</span>
-            </span>
-          </div>
+      <v-Loading v-if="isLoading" style="margin:50px auto;" type="spiningDubbles" color="#009688" :size="{ width: '50px', height: '50px' }">
+        <span>玩命加载中</span>
+      </v-Loading>
+      <div v-else>
+        <div class="detail_title">
+          <h3>{{info.title}}</h3>
         </div>
-        <div class="reply_content" v-html="item.content"></div>
+        <div class="detail-content" v-html="info.content"></div>
+        <div class="panel">
+          <div class="header">
+            <span class="col_fade">{{replies.length}} 回复</span>
+          </div>
+          <div class="cell reply_area reply_item" id="reply1" :reply_id="item.id" reply_to_id="" v-for="(item,index) in replies">
+
+            <div class="author_content">
+              <a href="" class="user_avatar">
+                <img :src="item.author.avatar_url" title="LynanBreeze"></a>
+                <div class="user_info">
+                  <a class="dark reply_author" href="">{{item.author.loginname}}</a>
+                  <a class="reply_time" href="#5aab7bf89b1b06e7639cac42">{{index+1}}楼•{{item.create_at | timeFormat}}</a>
+                </div>
+              <div class="user_action">
+                <span>
+                  <span class="up-count">喜欢({{item.ups.length}})</span>
+                </span>
+              </div>
+            </div>
+            <div class="reply_content" v-html="item.content"></div>
+          </div>
       </div>
-  </div>
+      </div>
   </div>
 </template>
 <script>
 import { GetTopicsDetal } from '../api'
+import VLoading from 'vue-loading-template'
 export default {
-  name: "",
+  components: {
+    VLoading
+  },
   data () {
     return {
-      info:{}
+      isLoading:true,
+      info:{},
+      replies:[]
     }
   },
   filters:{
@@ -58,6 +68,8 @@ export default {
       GetTopicsDetal(this.$route.params.id).then((res)=>{
         console.log(res);
         this.info = res.data
+        this.replies = res.data.replies
+        this.isLoading = false
       })
   }
 }
@@ -66,6 +78,7 @@ export default {
 .detail{
   padding:10px;
   width: 100%;
+  height: 100%;
   background-color: #fff;
   box-sizing: border-box;
   .author_content{

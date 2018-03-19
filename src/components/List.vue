@@ -28,7 +28,7 @@
                   </p>
                   <p class="bottom">
                     <span>{{item.reply_count}} / {{item.visit_count}}</span>
-                    <span>{{item.last_reply_at}}</span>
+                    <span>{{item.last_reply_at | timeFormat}}</span>
                   </p>
                 </div>
               </li>
@@ -72,6 +72,23 @@ export default {
         clsPrefix: 'loading-more-'
       },
       dataLoadDone:false
+    }
+  },
+  filters:{
+    timeFormat:function (dateStr) {
+      const timeFormatArr = [0, 60, 3600, 86400, 2592000, 946080000, Number.MAX_VALUE]
+      const timeUnit = ['刚刚', '分钟前', '小时前', '天前', '月前', '年前']
+      let dateTime = new Date(dateStr).getTime()
+      let now = new Date().getTime()
+      let time = (now - dateTime) / 1000
+      let index = timeFormatArr.findIndex((item, index) => {
+        return item <= time && timeFormatArr[index + 1] > time
+      })
+      if (index <= 0) {
+        return timeUnit[0]
+      }
+      time = time / timeFormatArr[index] | 0
+      return time + timeUnit[index]
     }
   },
   created() {
