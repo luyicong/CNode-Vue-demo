@@ -19,11 +19,16 @@
             <ul class="list_content">
               <li tag="li" v-for="item in list" :key="item.id" @click="$router.push({path:`/detail/${item.id}`})">
                 <div class="img">
-                  <img :src="item.author.avatar_url" alt="">
+                  <img v-lazy="item.author.avatar_url" alt="">
                 </div>
                 <div class="info">
                   <p class="top">
-                    <span class="tag">{{(item.top && item.good)?'置顶':'精华'}}</span>
+                    <span v-if="item.top" class="tag">置顶</span>
+                    <span v-else-if="item.tab==='ask'">问答</span>
+                    <span v-else-if="item.tab==='share'">分享</span>
+                    <span v-else-if="item.tab==='job'">招聘</span>
+                    <span v-else-if="item.tab==='good'">精华</span>
+                    <span v-else-if="item.tab==='weex'">weex</span>
                     <span class="title">{{item.title}}</span>
                   </p>
                   <p class="bottom">
@@ -45,6 +50,12 @@ import { Scroller } from 'vux'
 import { GetTopics } from '../api'
 import VLoading from 'vue-loading-template'
 export default {
+  props: {
+    type:{
+      type:String,
+      default:''
+    }
+  },
   components: {
     Scroller,
     VLoading
@@ -160,7 +171,13 @@ export default {
         float: left;
         overflow: hidden;
         line-height: 20px;
-        .tag{
+        span:first-child{
+          background-color: #ddd;
+          color: #999;
+          padding:2px 6px;
+          border-radius: 4px;
+        }
+        span.tag{
           background-color: #009688;
           font-size: 13px;
           color: #fff;

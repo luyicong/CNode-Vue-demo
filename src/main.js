@@ -7,6 +7,12 @@ import FastClick from 'fastclick'
 
 import store from './store'
 
+import VueLazyLoad from 'vue-lazyload'
+Vue.use(VueLazyLoad,{
+    error:require('./assets/img/default_1x1.png'),
+    loading:require('./assets/img/loading.gif')
+})
+
 FastClick.attach(document.body)
 
 import { BusPlugin } from 'vux'
