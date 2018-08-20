@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const debug = process.env.NODE_ENV !== 'production'
-let baseUrl = 'api'
+let baseUrl = 'https://www.vue-js.com/api/'
 if(debug){
   baseUrl = 'vueApi'
 }
